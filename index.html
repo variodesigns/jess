@@ -21,6 +21,7 @@
       justify-content: flex-start;
       height: 100vh;
       text-align: center;
+      position: relative;
     }
 
     .alt-font {
@@ -100,15 +101,6 @@
       text-align: left;
     }
 
-    #adminContent h2 {
-      margin-top: 0;
-    }
-
-    #emailList {
-      margin-top: 10px;
-      font-size: 16px;
-    }
-
     #adminContent button {
       margin-right: 10px;
       margin-top: 10px;
@@ -125,6 +117,17 @@
     #downloadEmails {
       background: #6f8a5a;
     }
+
+    /* Invisible bottom-right trigger */
+    #secretTrigger {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      bottom: 0;
+      right: 0;
+      z-index: 999;
+      background: transparent;
+    }
   </style>
 </head>
 <body>
@@ -140,16 +143,19 @@
 
   <div class="input-box">
     <input id="email" type="email" placeholder="Your email address">
-    <button onclick="saveEmail()">Join Now</button>
+    <button onclick="saveEmail()">Join Mailing List</button>
     <p id="successMessage" class="alt-font">Thank you for joining the list!</p>
   </div>
 
-  <br>
+  <br><br><br><br><br>
 
   <div class="alt-font">
     <center><h3>www.random-creations.co.uk</h3></center>
     <center><h3>hello@random-creations.co.uk</h3></center>
   </div>
+
+  <!-- Invisible bottom-right trigger -->
+  <div id="secretTrigger"></div>
 
   <!-- Hidden Admin Panel -->
   <div id="adminPanel">
@@ -187,31 +193,25 @@
       }, 3000);
     }
 
-    // Secret triple-tap on logo to open admin
-    (function setupSecretAdminTrigger() {
-      const logo = document.getElementById('logo');
-      let tapCount = 0;
-      let tapTimer = null;
-      const TAP_WINDOW = 800; // ms
+    // Secret gesture: logo tap → bottom-right tap → bottom-right tap
+    let step = 0;
+    const logo = document.getElementById('logo');
+    const trigger = document.getElementById('secretTrigger');
 
-      logo.addEventListener('click', () => {
-        tapCount++;
+    logo.addEventListener('click', () => {
+      step = 1;
+      setTimeout(() => step = 0, 1500);
+    });
 
-        if (tapTimer) {
-          clearTimeout(tapTimer);
-        }
-
-        tapTimer = setTimeout(() => {
-          tapCount = 0;
-        }, TAP_WINDOW);
-
-        if (tapCount === 3) {
-          tapCount = 0;
-          clearTimeout(tapTimer);
-          openAdmin();
-        }
-      });
-    })();
+    trigger.addEventListener('click', () => {
+      if (step === 1) {
+        step = 2;
+        setTimeout(() => step = 0, 1500);
+      } else if (step === 2) {
+        step = 0;
+        openAdmin();
+      }
+    });
 
     function openAdmin() {
       const panel = document.getElementById('adminPanel');
