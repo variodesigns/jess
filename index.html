@@ -1,29 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Mailing List</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+
+  <!-- Import Mom's Typewriter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Mom's+Typewriter&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f7f0e7;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      text-align: center;
+    }
+
+    /* Apply Mom's Typewriter to all non-input text */
+    .alt-font {
+      font-family: "Mom's Typewriter", monospace;
+    }
+
+    .logo {
+      width: 300px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    input[type="email"] {
+      padding: 14px;
+      width: 260px;
+      font-size: 18px;
+      border: 2px solid #d8c7b8;
+      border-radius: 6px;
+      background: #fff;
+      text-align: center;
+    }
+
+    input[type="email"]::placeholder {
+      color: #bfae9f;
+      opacity: 1;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 14px 26px;
+      font-size: 18px;
+      background: #c7a48a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background: #b89278;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Centered table container -->
-  <div class="table-wrapper">
-    <img src="/images/table.jpg" class="table-image" alt="table">
+  <br><br>
 
-    <!-- Your original container for JS-generated photos -->
-    <div id="table"></div>
+  <div class="alt-font">
+    <center><h1>JOIN OUR CUSTOMER LIST</h1></center>
+    <center><h2><b>Offers - News - More</b></h2></center>
   </div>
 
-  <!-- Message box -->
-  <div id="message-box" class="hidden">
-    <p>Just a small snippet of the amazing memories you gave me...</p>
-    <a href="message.html">Continue</a>
+  <img src="logo.png" class="logo" alt="Logo">
+
+  <div class="input-box">
+    <input id="email" type="email" placeholder="Your email address">
+    <button onclick="saveEmail()">Join Mailing List</button>
   </div>
 
-  <!-- Fullscreen viewer -->
-  <div id="fullscreen">
-    <img src="" alt="">
+  <br><br><br><br><br>
+
+  <div class="alt-font">
+    <center><h3>www.random-creations.co.uk</h3></center>
+    <center><h3>hello@random-creations.co.uk</h3></center>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    function saveEmail() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) return;
+
+      const list = JSON.parse(localStorage.getItem('emails') || '[]');
+      list.push({
+        email,
+        time: new Date().toISOString()
+      });
+      localStorage.setItem('emails', JSON.stringify(list));
+
+      document.getElementById('email').value = '';
+      alert("Thanks! You're on the list.");
+    }
+  </script>
+
 </body>
 </html>
