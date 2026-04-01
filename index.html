@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Mailing List</title>
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="manifest" href="manifest.json">
 
   <!-- Import Mom's Typewriter font -->
   <link href="https://fonts.googleapis.com/css2?family=Mom's+Typewriter&display=swap" rel="stylesheet">
@@ -71,6 +71,14 @@
     button:hover {
       background: #b89278;
     }
+
+    /* Success message styling */
+    #successMessage {
+      color: #8a6d5a;
+      font-size: 20px;
+      margin-top: 20px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -86,10 +94,13 @@
 
   <div class="input-box">
     <input id="email" type="email" placeholder="Your email address">
-    <button onclick="saveEmail()">Join Mailing List</button>
+    <button onclick="saveEmail()">Join Now</button>
+
+    <!-- Custom success message -->
+    <p id="successMessage" class="alt-font">Thank you for joining the list!</p>
   </div>
 
-  <br><br><br><br><br>
+  <br><br><br>
 
   <div class="alt-font">
     <center><h3>www.random-creations.co.uk</h3></center>
@@ -109,7 +120,16 @@
       localStorage.setItem('emails', JSON.stringify(list));
 
       document.getElementById('email').value = '';
-      alert("Thanks! You're on the list.");
+
+      // Show custom message
+      const msg = document.getElementById('successMessage');
+      msg.style.display = 'block';
+      msg.textContent = "Thank you for joining the list!";
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        msg.style.display = 'none';
+      }, 3000);
     }
   </script>
 
