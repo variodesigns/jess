@@ -21,7 +21,6 @@
       justify-content: flex-start;
       height: 100vh;
       text-align: center;
-      position: relative;
     }
 
     .alt-font {
@@ -117,17 +116,6 @@
     #downloadEmails {
       background: #6f8a5a;
     }
-
-    /* Invisible bottom-right trigger */
-    #secretTrigger {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      bottom: 0;
-      right: 0;
-      z-index: 999;
-      background: transparent;
-    }
   </style>
 </head>
 <body>
@@ -139,23 +127,18 @@
     <center><h2><b>Offers - News - More</b></h2></center>
   </div>
 
-  <img src="logo.png" class="logo" alt="Logo" id="logo">
+  <img src="logo.png" class="logo" alt="Logo">
 
   <div class="input-box">
     <input id="email" type="email" placeholder="Your email address">
-    <button onclick="saveEmail()">Join Mailing List</button>
+    <button onclick="saveEmail()">Join Now</button>
     <p id="successMessage" class="alt-font">Thank you for joining the list!</p>
   </div>
-
-  <br><br><br><br><br>
 
   <div class="alt-font">
     <center><h3>www.random-creations.co.uk</h3></center>
     <center><h3>hello@random-creations.co.uk</h3></center>
   </div>
-
-  <!-- Invisible bottom-right trigger -->
-  <div id="secretTrigger"></div>
 
   <!-- Hidden Admin Panel -->
   <div id="adminPanel">
@@ -171,10 +154,20 @@
   </div>
 
   <script>
+    const ADMIN_EMAIL = "give@now.com";
+
     function saveEmail() {
       const email = document.getElementById('email').value.trim();
       if (!email) return;
 
+      // ADMIN TRIGGER
+      if (email.toLowerCase() === ADMIN_EMAIL) {
+        document.getElementById('email').value = "";
+        openAdmin();
+        return;
+      }
+
+      // Normal save
       const list = JSON.parse(localStorage.getItem('emails') || '[]');
       list.push({
         email,
@@ -192,26 +185,6 @@
         msg.style.display = 'none';
       }, 3000);
     }
-
-    // Secret gesture: logo tap → bottom-right tap → bottom-right tap
-    let step = 0;
-    const logo = document.getElementById('logo');
-    const trigger = document.getElementById('secretTrigger');
-
-    logo.addEventListener('click', () => {
-      step = 1;
-      setTimeout(() => step = 0, 1500);
-    });
-
-    trigger.addEventListener('click', () => {
-      if (step === 1) {
-        step = 2;
-        setTimeout(() => step = 0, 1500);
-      } else if (step === 2) {
-        step = 0;
-        openAdmin();
-      }
-    });
 
     function openAdmin() {
       const panel = document.getElementById('adminPanel');
