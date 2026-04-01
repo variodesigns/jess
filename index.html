@@ -23,7 +23,6 @@
       text-align: center;
     }
 
-    /* Apply Mom's Typewriter to all non-input text */
     .alt-font {
       font-family: "Mom's Typewriter", monospace;
     }
@@ -72,12 +71,59 @@
       background: #b89278;
     }
 
-    /* Success message styling */
     #successMessage {
       color: #8a6d5a;
       font-size: 20px;
       margin-top: 20px;
       display: none;
+    }
+
+    /* Hidden admin panel */
+    #adminPanel {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #adminContent {
+      background: #f7f0e7;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 90%;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: left;
+    }
+
+    #adminContent h2 {
+      margin-top: 0;
+    }
+
+    #emailList {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    #adminContent button {
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+
+    #closeAdmin {
+      background: #999;
+    }
+
+    #clearEmails {
+      background: #b35b5b;
+    }
+
+    #downloadEmails {
+      background: #6f8a5a;
     }
   </style>
 </head>
@@ -90,21 +136,32 @@
     <center><h2><b>Offers - News - More</b></h2></center>
   </div>
 
-  <img src="logo.png" class="logo" alt="Logo">
+  <img src="logo.png" class="logo" alt="Logo" id="logo">
 
   <div class="input-box">
     <input id="email" type="email" placeholder="Your email address">
     <button onclick="saveEmail()">Join Now</button>
-
-    <!-- Custom success message -->
     <p id="successMessage" class="alt-font">Thank you for joining the list!</p>
   </div>
 
-  <br><br><br>
+  <br>
 
   <div class="alt-font">
     <center><h3>www.random-creations.co.uk</h3></center>
     <center><h3>hello@random-creations.co.uk</h3></center>
+  </div>
+
+  <!-- Hidden Admin Panel -->
+  <div id="adminPanel">
+    <div id="adminContent" class="alt-font">
+      <h2>Saved Emails</h2>
+      <div id="emailList"></div>
+      <div style="margin-top:15px;">
+        <button id="downloadEmails" onclick="downloadEmails()">Download emails.txt</button>
+        <button id="clearEmails" onclick="clearEmails()">Clear all</button>
+        <button id="closeAdmin" onclick="closeAdmin()">Close</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -121,15 +178,85 @@
 
       document.getElementById('email').value = '';
 
-      // Show custom message
       const msg = document.getElementById('successMessage');
       msg.style.display = 'block';
       msg.textContent = "Thank you for joining the list!";
 
-      // Hide after 3 seconds
       setTimeout(() => {
         msg.style.display = 'none';
       }, 3000);
+    }
+
+    // Secret triple-tap on logo to open admin
+    (function setupSecretAdminTrigger() {
+      const logo = document.getElementById('logo');
+      let tapCount = 0;
+      let tapTimer = null;
+      const TAP_WINDOW = 800; // ms
+
+      logo.addEventListener('click', () => {
+        tapCount++;
+
+        if (tapTimer) {
+          clearTimeout(tapTimer);
+        }
+
+        tapTimer = setTimeout(() => {
+          tapCount = 0;
+        }, TAP_WINDOW);
+
+        if (tapCount === 3) {
+          tapCount = 0;
+          clearTimeout(tapTimer);
+          openAdmin();
+        }
+      });
+    })();
+
+    function openAdmin() {
+      const panel = document.getElementById('adminPanel');
+      const listDiv = document.getElementById('emailList');
+      const list = JSON.parse(localStorage.getItem('emails') || '[]');
+
+      if (list.length === 0) {
+        listDiv.innerHTML = "<p>No emails saved yet.</p>";
+      } else {
+        listDiv.innerHTML = list
+          .map(entry => `<p>${entry.email}<br><small>${entry.time}</small></p>`)
+          .join("");
+      }
+
+      panel.style.display = 'flex';
+    }
+
+    function closeAdmin() {
+      document.getElementById('adminPanel').style.display = 'none';
+    }
+
+    function clearEmails() {
+      if (!confirm("Are you sure you want to clear all saved emails?")) return;
+      localStorage.removeItem('emails');
+      document.getElementById('emailList').innerHTML = "<p>No emails saved yet.</p>";
+    }
+
+    function downloadEmails() {
+      const list = JSON.parse(localStorage.getItem('emails') || '[]');
+      if (list.length === 0) {
+        alert("No emails to download.");
+        return;
+      }
+
+      const lines = list.map(entry => `${entry.email} (${entry.time})`);
+      const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'emails.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   </script>
 
